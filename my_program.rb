@@ -1,6 +1,6 @@
 p "Where are you located?"
-#user_location = gets.chomp
-user_location = "Chicago"
+user_location = gets.chomp
+
 p user_location
 
 gmats_key = ENV.fetch("GMAPS_KEY")
@@ -29,8 +29,35 @@ ds_parsed_data =JSON.parse(ds_raw_data)
 ds_currently_hash = ds_parsed_data.fetch("currently")
 ds_minutely_hash = ds_parsed_data.fetch("minutely")
 ds_data_hash = ds_minutely_hash.fetch("data")
-time_current = 
-p ds_temperature = ds_currently_hash.fetch("temperature")
-p ds_summary = ds_minutely_hash.fetch("summary")
+time_current = Time.at(ds_currently_hash.fetch("time"))
+ds_temperature = ds_currently_hash.fetch("temperature")
+ds_summary = ds_minutely_hash.fetch("summary")
 
-p Time.at(ds_data_hash.at(0).fetch("time"))
+p "Current temperature: " + ds_temperature.to_s
+p "Summary for next hour: " + ds_summary
+
+#Perc 1h
+
+
+count = 0
+umbrella = 0
+while count<12
+  count = count +1
+  time_h = Time.at(ds_data_hash.at(count).fetch("time"))
+  precip_h = ds_data_hash.at(count).fetch("precipProbability")
+  if precip_h > 0.1
+    x = (time_h - time_current)/60
+    p x.to_s + " hours from now, the precipitation probability is: " + precip_h.to_s
+    umbrella = umbrella + 1
+  end
+end
+
+if umbrella > 0 
+  p "You might want to carry an umbrella!"
+elsif
+  p "You probably won't need an umbrella today."
+end
+
+p latitude
+p longitude
+p darksky_url
